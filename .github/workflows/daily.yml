@@ -1,0 +1,40 @@
+name: Trocar foto do Teams diariamente
+
+on:
+  schedule:
+    - cron: "17 12 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  change-photo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Dependências
+        run: pip install -r requirements.txt
+
+      - name: Atualizar foto
+        env:
+          MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
+          MS_TENANT_ID: ${{ secrets.MS_TENANT_ID }}
+          MS_TOKEN_CACHE: ${{ secrets.MS_TOKEN_CACHE }}
+          TIMEZONE: America/Sao_Paulo
+        run: |
+          python main.py > output.txt
+          cat output.txt
+
+          # Se for a primeira execução e o script imprimir TOKEN_CACHE=...,
+          # copie o valor para o secret MS_TOKEN_CACHE.
+          if grep -q '^TOKEN_CACHE=' output.txt; then
+            echo "Primeiro login concluído. Atualize o secret MS_TOKEN_CACHE."
+          fi
