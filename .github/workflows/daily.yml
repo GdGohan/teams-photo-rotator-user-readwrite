@@ -23,6 +23,14 @@ jobs:
       - name: Dependências
         run: pip install -r requirements.txt
 
+      - name: Verificar IDs
+        env:
+          CLIENT: ${{ secrets.MS_CLIENT_ID }}
+          TENANT: ${{ secrets.MS_TENANT_ID }}
+        run: |
+          echo "CLIENT: ${#CLIENT} caracteres"
+          echo "TENANT: ${#TENANT} caracteres"
+    
       - name: Atualizar foto
         env:
           MS_CLIENT_ID: ${{ secrets.MS_CLIENT_ID }}
